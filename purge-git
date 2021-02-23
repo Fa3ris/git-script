@@ -1,0 +1,42 @@
+#!/bin/bash
+
+usage() {
+	echo -e "usage $0 [-d]\n
+	-d delete merged branches\n
+	must be in a git repo\n"
+}
+
+
+if ! $(git rev-parse > /dev/null 2>&1); then
+	echo this is not a git repo
+	usage
+	exit 1
+# else
+	# echo this is a git repo
+fi
+
+
+DELETE=false
+
+while getopts ":d" OPTION; do
+    case $OPTION in
+    d)
+        DELETE=true
+		echo "option $OPTION selected"
+        ;;
+    *)
+		usage
+        exit 1
+        ;;
+    esac
+done
+
+
+if [ "$DELETE" = true ]; then
+	git branch --merged | egrep -v "(^\*|master|dev)" | xargs git branch -d
+else
+	echo 'branches to delete'
+	git branch --merged | egrep -v "(^\*|master|dev)"
+fi
+
+
